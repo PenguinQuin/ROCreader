@@ -7,30 +7,27 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Cross-Compiler
+      - name: Build with dockcross
         run: |
-          sudo apt-get update
-          # 只安装交叉编译器，不安装有争议的 arm64 库
-          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-
-      - name: Build Binary
-        run: |
-          # 告诉 Makefile 我们是在做交叉编译
-          # 确保编译器是 aarch64-linux-gnu-g++
-          make clean
-          make CXX=aarch64-linux-gnu-g++ CC=aarch64-linux-gnu-gcc
-
+          # 1. 获取 dockcross 脚本
+          docker run --rm dockcross/linux-armv8 > ./dockcross
+          chmod +x ./dockcross
+          
+          # 2. 使用 dockcross 环境进行编译
+          # 它是预配置好的环境，自动包含了 arm64 的 SDL2 等库
+          ./dockcross make clean
+          ./dockcross make
+          
       - name: Upload Binary
         uses: actions/upload-artifact@v4
         with:
           name: rocreader-arm64
           path: |
-            rocreader_sdl
-            ROCreader
             build/rocreader_sdl
+            rocreader_sdl
           if-no-files-found: warn
