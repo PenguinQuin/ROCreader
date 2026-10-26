@@ -1,4 +1,4 @@
-name: Build ROCreader for ARM64
+name: Build ROCreader for ARM64 (Native)
 
 on:
   push:
@@ -7,27 +7,30 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # 关键点：直接使用 ARM64 原生环境
+    runs-on: ubuntu-24.04-arm
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build with dockcross
+      - name: Install Dependencies
         run: |
-          # 1. 获取 dockcross 脚本
-          docker run --rm dockcross/linux-armv8 > ./dockcross
-          chmod +x ./dockcross
-          
-          # 2. 使用 dockcross 环境进行编译
-          # 它是预配置好的环境，自动包含了 arm64 的 SDL2 等库
-          ./dockcross make clean
-          ./dockcross make
-          
+          sudo apt-get update
+          # 因为是 ARM64 原生环境，这里直接安装普通的库就行，不会再报错了
+          sudo apt-get install -y build-essential libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev libzip-dev
+
+      - name: Build Binary
+        run: |
+          # 因为是原生 ARM 环境，直接 make 即可，不需要任何交叉编译参数
+          make clean
+          make
+
       - name: Upload Binary
         uses: actions/upload-artifact@v4
         with:
-          name: rocreader-arm64
+          name: rocreader-arm64-native
           path: |
-            build/rocreader_sdl
             rocreader_sdl
-          if-no-files-found: warn
+            ROCreader
+            build/rocreader_sdl
+          if-no-files-found: error
