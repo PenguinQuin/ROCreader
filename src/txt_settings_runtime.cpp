@@ -30,8 +30,6 @@ constexpr std::array<int, 16> kFontPointSizes = {{18, 20, 22, 24, 26, 28, 30, 32
 
 }};
 
-constexpr std::array<int, 10> kFontPointSizes = {{18, 20, 22, 24, 26, 28, 30, 32, 34, 36}};
-
 int ColorLuma(SDL_Color color) { return color.r * 299 + color.g * 587 + color.b * 114; }
 
 int ScalePx(float scale, int value) {
