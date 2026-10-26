@@ -10,25 +10,25 @@
 namespace {
 constexpr int kColorOptionCount = 5;
 constexpr int kSelectableRowCount = 4;
+constexpr int kTranscodeRow = 3;
+
 constexpr std::array<SDL_Color, kColorOptionCount> kBackgroundColors = {{
-    {246, 236, 209, 255}, // 0: 暖白羊皮纸（替代刺眼纯白，温和滤蓝光）
-    {234, 214, 168, 255}, // 1: 深度去蓝光暖黄（仿古纸/夜间护眼模式，极低蓝光）
-    {199, 237, 204, 255}, // 2: 经典护眼豆沙绿（#C7EDCC）
-    {183, 214, 186, 255}, // 3: 柔和暗豆沙绿（降低整体亮度与蓝光，适合暗光）
-    {26, 24, 21, 255},    // 4: 暖黑夜间模式（微暖深炭黑，避免纯黑高反差眩光）
+    {246, 236, 209, 255}, // 0: 暖白羊皮纸
+    {234, 214, 168, 255}, // 1: 深度去蓝光暖黄
+    {199, 237, 204, 255}, // 2: 经典护眼豆沙绿
+    {183, 214, 186, 255}, // 3: 柔和暗豆沙绿
+    {26, 24, 21, 255},    // 4: 暖黑夜间模式
 }};
 
 constexpr std::array<SDL_Color, kColorOptionCount> kFontColors = {{
-    {218, 208, 190, 255}, // 0: 暖米灰白（配暖黑背景，去蓝光不刺眼）
-    {176, 168, 154, 255}, // 1: 柔和暖灰（配夜间/暗色背景）
-    {92, 86, 78, 255},    // 2: 暖中灰（低对比度柔和阅读）
-    {58, 52, 44, 255},    // 3: 浓茶褐/深暖灰（配暖黄/豆沙绿最自然舒适）
-    {28, 26, 23, 255},    // 4: 柔和暖墨黑（替代纯黑，模拟真实纸墨）
+    {218, 208, 190, 255}, // 0: 暖米灰白
+    {176, 168, 154, 255}, // 1: 柔和暖灰
+    {92, 86, 78, 255},    // 2: 暖中灰
+    {58, 52, 44, 255},    // 3: 浓茶褐
+    {28, 26, 23, 255},    // 4: 柔和暖墨黑
 }};
 
 constexpr std::array<int, 16> kFontPointSizes = {{18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48}};
-
-}};
 
 int ColorLuma(SDL_Color color) { return color.r * 299 + color.g * 587 + color.b * 114; }
 
@@ -42,6 +42,7 @@ void SyncSelectedOptionForRow(TxtSettingsState &state) {
   } else if (state.selected_row == 1) {
     state.selected_option = ClampTxtColorIndex(state.font_color);
   } else if (state.selected_row == 2) {
+    // 动态边界处理
     state.selected_option = std::clamp(state.selected_option, 0, 1);
   } else {
     state.selected_option = 0;
