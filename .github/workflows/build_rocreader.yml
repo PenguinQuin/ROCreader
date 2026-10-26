@@ -1,4 +1,4 @@
-name: Build ROCreader for ARM64 (Native)
+name: Build ROCreader for RGDS Plus
 
 on:
   push:
@@ -7,30 +7,29 @@ on:
 
 jobs:
   build:
-    # 关键点：直接使用 ARM64 原生环境
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Dependencies
+      - name: Install PowerShell
         run: |
+          # 这是一个 PowerShell 脚本，所以我们需要在 Ubuntu 里装上它
           sudo apt-get update
-          # 因为是 ARM64 原生环境，这里直接安装普通的库就行，不会再报错了
-          sudo apt-get install -y build-essential libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev libzip-dev
+          sudo apt-get install -y powershell
 
-      - name: Build Binary
+      - name: Build with Author's Script
         run: |
-          # 因为是原生 ARM 环境，直接 make 即可，不需要任何交叉编译参数
-          make clean
-          make
-
+          # 进入 rgds_plus 目录
+          cd rgds_plus
+          # 运行作者提供的构建脚本
+          pwsh build_rgds_plus_official.ps1
+          
       - name: Upload Binary
         uses: actions/upload-artifact@v4
         with:
-          name: rocreader-arm64-native
+          name: rocreader-rgds-plus-official
           path: |
-            rocreader_sdl
-            ROCreader
             build/rocreader_sdl
-          if-no-files-found: error
+            rgds_plus/build/rocreader_sdl
+          if-no-files-found: warn
