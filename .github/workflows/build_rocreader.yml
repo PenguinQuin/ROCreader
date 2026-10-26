@@ -1,4 +1,4 @@
-name: Build ROCreader for RGDS Plus
+name: Build Binary
 
 on:
   push:
@@ -9,27 +9,18 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install PowerShell
+      - name: Build
         run: |
-          # 这是一个 PowerShell 脚本，所以我们需要在 Ubuntu 里装上它
-          sudo apt-get update
-          sudo apt-get install -y powershell
-
-      - name: Build with Author's Script
-        run: |
-          # 进入 RGDSPlus 目录
-          cd RGDSPlus
-          # 运行作者提供的构建脚本
-          pwsh build_rgds_plus_official.ps1
+          # 不使用脚本，直接 make，但增加静态链接参数，尝试把库包进去
+          # 这通常能解决闪退问题
+          make clean
+          make LDFLAGS="-static-libgcc -static-libstdc++"
           
-      - name: Upload Binary
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: rocreader-rgds-plus-official
-          path: |
-            build/rocreader_sdl
-            rgds_plus/build/rocreader_sdl
-          if-no-files-found: warn
+          name: rocreader-final
+          path: build/rocreader_sdl
