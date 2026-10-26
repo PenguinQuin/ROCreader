@@ -12,6 +12,7 @@ constexpr int kColorOptionCount = 5;
 constexpr int kSelectableRowCount = 4;
 constexpr int kTranscodeRow = 3;
 
+// --- 已修改：自定义护眼配色方案 ---
 constexpr std::array<SDL_Color, kColorOptionCount> kBackgroundColors = {{
     {246, 236, 209, 255}, // 0: 暖白羊皮纸
     {234, 214, 168, 255}, // 1: 深度去蓝光暖黄
@@ -28,6 +29,7 @@ constexpr std::array<SDL_Color, kColorOptionCount> kFontColors = {{
     {28, 26, 23, 255},    // 4: 柔和暖墨黑
 }};
 
+// --- 已修改：扩展至 16 档字号，最高 48pt ---
 constexpr std::array<int, 16> kFontPointSizes = {{18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48}};
 
 int ColorLuma(SDL_Color color) { return color.r * 299 + color.g * 587 + color.b * 114; }
@@ -42,7 +44,6 @@ void SyncSelectedOptionForRow(TxtSettingsState &state) {
   } else if (state.selected_row == 1) {
     state.selected_option = ClampTxtColorIndex(state.font_color);
   } else if (state.selected_row == 2) {
-    // 动态边界处理
     state.selected_option = std::clamp(state.selected_option, 0, 1);
   } else {
     state.selected_option = 0;
@@ -53,6 +54,7 @@ void SyncSelectedOptionForRow(TxtSettingsState &state) {
 int ClampTxtColorIndex(int value) { return std::clamp(value, 0, kColorOptionCount - 1); }
 
 int ClampTxtFontSizeLevel(int value) {
+  // 动态处理数组大小变化
   return std::clamp(value, 0, static_cast<int>(kFontPointSizes.size()) - 1);
 }
 
