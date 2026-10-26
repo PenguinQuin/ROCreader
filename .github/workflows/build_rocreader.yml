@@ -18,12 +18,26 @@ jobs:
 
       - name: Build Binary
         run: |
-          # 直接使用项目自带的 Makefile 进行编译
+          # 编译程序
           make clean
           make
+
+      - name: Debug - List files
+        run: |
+          echo "正在搜索可执行文件..."
+          find . -maxdepth 3 -executable -type f
+          echo "--- 当前目录结构 ---"
+          ls -R
 
       - name: Upload Binary
         uses: actions/upload-artifact@v4
         with:
           name: rocreader-sdl-custom
-          path: rocreader_sdl
+          # 增加多个可能存在的路径
+          path: |
+            rocreader_sdl
+            ROCreader
+            bin/rocreader_sdl
+            build/rocreader_sdl
+            ./rocreader_sdl
+          if-no-files-found: warn
