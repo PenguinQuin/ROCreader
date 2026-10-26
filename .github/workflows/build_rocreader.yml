@@ -20,8 +20,8 @@ jobs:
 
       - name: Build with Author's Script
         run: |
-          # 进入 rgds_plus 目录
-          cd rgds_plus
+          # 进入 RGDSPlus 目录
+          cd RGDSPlus
           # 运行作者提供的构建脚本
           pwsh build_rgds_plus_official.ps1
           
